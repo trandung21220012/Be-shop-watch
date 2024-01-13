@@ -11,6 +11,7 @@ import routerImg from './route/image';
 import routerProduct from './route/product';
 import routerTrademark from './route/trademark';
 import routerCart from './route/cart';
+import routerTest from './route/test';
 
 const storage = multer.diskStorage({
     destination: function (req, file, callback) { //noi luu anh
@@ -54,6 +55,7 @@ app.use("/images", routerImg)
 app.use('/product', routerProduct)
 app.use('/trademark', routerTrademark)
 app.use('/cart', routerCart)
+app.use('/test', routerTest)
 
 app.use(function (req, res) {
     res.status(404).send({ url: req.originalUrl + " not found" });
