@@ -55,7 +55,7 @@ app.use("/images", routerImg)
 app.use('/product', routerProduct)
 app.use('/trademark', routerTrademark)
 app.use('/cart', routerCart)
-app.use('/canbo', routerCanbo)
+app.use('/staff2', routerCanbo)
 
 app.use(function (req, res) {
     res.status(404).send({ url: req.originalUrl + " not found" });
