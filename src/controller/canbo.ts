@@ -25,17 +25,24 @@ export const getCanbo: RequestHandler = async (req, res) => {
     if (typeof req.query.name === 'string') {
       searchOptions.name = { $regex: req.query.name, $options: 'i' };
     }
-    if (typeof req.query.age === 'string') {
+    if (typeof req.query.age === 'number') {
       searchOptions.age = parseInt(req.query.age, 10);
+// thoi diem hien tai - so tuoi => lay nam sinh ra
+// thoi diem dau va cuoi nam sinh ra => diem dau< bd< diem cuoi
+
     }
     if (typeof req.query.country === 'string') {
       searchOptions.country = { $regex: req.query.country, $options: 'i' };
     }
     const data = await CanboModel.find(searchOptions);
+    //clone du lieu 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const clone:any[] = [...data]
+    
     //khai bao dataFormat gan bang bien value
-    const dataFormat = data.map((value)=> {
+    const dataFormat = clone.map((value)=> {
       return {
-        ...value,age:calculateAge(value.birthday) 
+        ...value._doc,age:calculateAge(value.birthday) 
     //ke thua het gtri cua value voi bien calculateAge va dan gtri birthday moi 
       }
     }) 
