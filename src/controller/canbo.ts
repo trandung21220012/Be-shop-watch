@@ -22,14 +22,11 @@ interface SearchOptions {
 export const getCanbo: RequestHandler = async (req, res) => {
   try {
     const searchOptions: SearchOptions = {};
-    if (typeof req.query.name === 'string') {
+    if (typeof req.query.name === 'string') { //sử dụng để lấy dữ liệu từ query parameter "name" của request.
       searchOptions.name = { $regex: req.query.name, $options: 'i' };
     }
     if (typeof req.query.age === 'number') {
       searchOptions.age = parseInt(req.query.age, 10);
-// thoi diem hien tai - so tuoi => lay nam sinh ra
-// thoi diem dau va cuoi nam sinh ra => diem dau< bd< diem cuoi
-
     }
     if (typeof req.query.country === 'string') {
       searchOptions.country = { $regex: req.query.country, $options: 'i' };
@@ -54,7 +51,6 @@ export const getCanbo: RequestHandler = async (req, res) => {
     res.send(errorReturn(getErrorMessage(error)));
   }
 };
-
 
 export const createcanbo: RequestHandler = async (req,res) => {
     try {
