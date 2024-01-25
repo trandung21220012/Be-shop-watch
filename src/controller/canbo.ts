@@ -1,37 +1,52 @@
 import { RequestHandler } from "express";
 import CanboModel from "../model/canbo";
 import { dataReturn, errorReturn, getErrorMessage } from "../ulti/hook";
+import moment from "moment";
 
 // Tinh tuoi tinh bang timestamp 
-const  calculateAge = (birthTimestamp: number) => {
-  const currentTimestamp = Date.now();
-  const ageInMilliseconds = currentTimestamp - birthTimestamp;
-  const ageInSeconds = ageInMilliseconds / 1000;
-  const ageInYears = ageInSeconds / (365.25 * 24 * 60 * 60); 
-  const roundedAge = Math.floor(ageInYears);
+function calculateAge(birthTimestamp: number): number {
+  const birthDate = moment(birthTimestamp);
+  const currentYear = moment().year();
+  const birthYear = birthDate.year();
 
-  return roundedAge;
+  const age = currentYear - birthYear;
+  
+  return age;
 }
 
 interface SearchOptions {
   name?: { $regex: string; $options: 'i' };
-  age?: number;
+  birthday?: {$gte: number, $lte: number };
   country?: { $regex: string; $options: 'i' };
 }
 
 export const getCanbo: RequestHandler = async (req, res) => {
   try {
     const searchOptions: SearchOptions = {};
-    if (typeof req.query.name === 'string') { //sử dụng để lấy dữ liệu từ query parameter "name" của request.
-      searchOptions.name = { $regex: req.query.name, $options: 'i' };
+    if (typeof req.query.name === 'string') {
+      searchOptions.name = { $regex: req.query.name.trim(), $options: 'i' };
     }
-    if (typeof req.query.age === 'number') {
-      searchOptions.age = parseInt(req.query.age, 10);
+    
+// thoi diem hien tai - so tuoi => lay nam sinh ra
+// thoi diem dau va cuoi nam sinh ra => diem dau< bd< diem cuoi
+    
+    if (typeof req.query.age === 'string') {
+    
+      const getYear = new Date()
+
+      const namhientai = getYear.getFullYear()
+  
+      const namsinh = namhientai - parseInt(req.query.age.trim())
+      const daunam =moment(`${namsinh}-01-01`).startOf('year').valueOf()
+      const cuoinam = moment(`${namsinh}-12-31`).endOf('year').valueOf()
+      
+      searchOptions.birthday =  { $gte: daunam, $lte: cuoinam };
     }
     if (typeof req.query.country === 'string') {
-      searchOptions.country = { $regex: req.query.country, $options: 'i' };
+      searchOptions.country = { $regex: req.query.country.trim(), $options: 'i' };
     }
-    const data = await CanboModel.find(searchOptions);
+    const data = await CanboModel.find(searchOptions).sort({ name: 1 })
+
     //clone du lieu 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const clone:any[] = [...data]
