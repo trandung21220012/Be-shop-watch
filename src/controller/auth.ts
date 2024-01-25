@@ -114,7 +114,7 @@ const checkActiveUser = async (email:string, password:string) => {
     }
 }
 
-export const register: RequestHandler = async (req, res) => { // Đăng ký 
+export const register: RequestHandler = async (req, res) => {
     try {
         const data = req.body 
         const check = await UserModel.findOne({ 'email': data.email })
@@ -132,11 +132,11 @@ export const register: RequestHandler = async (req, res) => { // Đăng ký
     }
 }
 
-export const isLoggedIn: RequestHandler = async (req, res, next) => { //kiểm tra xem người dùng có đang đăng nhập không 
+export const isLoggedIn: RequestHandler = async (req, res, next) => {
     try {
-        const token = req.headers.authorization.startsWith('Bearer') //Đoạn mã kiểm tra xem giá trị bắt đầu bằng chuỗi "Bearer".
-        const decoded = await promisify(jwt.verify).bind(token, process.env.JWT_SECRET) //Sử dụng thư viện jsonwebtoken để giải mã (decode) token.
-        const currentUser = await UserModel.findById(decoded.id) //Truy vấn đến cơ sở dữ liệu để lấy thông tin người dùng dựa trên ID.
+        const token = req.headers.authorization.startsWith('Bearer')
+        const decoded = await promisify(jwt.verify).bind(token, process.env.JWT_SECRET)
+        const currentUser = await UserModel.findById(decoded.id)
         if (currentUser) {
             return next()
         }
@@ -146,7 +146,7 @@ export const isLoggedIn: RequestHandler = async (req, res, next) => { //kiểm t
     }
 }
 
-export const protect: RequestHandler = async (req,res,next) => { //Bảo vệ 
+export const protect: RequestHandler = async (req,res,next) => {
     try {
         let token:string
         if (
@@ -181,7 +181,7 @@ export const protect: RequestHandler = async (req,res,next) => { //Bảo vệ
     }
 }
 
-export const restrictTo = (...roles: string[]): RequestHandler => {  //Hạn chế
+export const restrictTo = (...roles: string[]): RequestHandler => {
 
     return (_req, res, next) => {
             console.log(roles);
@@ -197,7 +197,7 @@ export const restrictTo = (...roles: string[]): RequestHandler => {  //Hạn ch�
     };
 };
 
-export const generateAccessToken = (userId: mongoose.Types.ObjectId) => { // Tạo accessToken 
+export const generateAccessToken = (userId: mongoose.Types.ObjectId) => {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN_ACCES_KEY
     });

@@ -24,6 +24,7 @@ export const getCanbo: RequestHandler = async (req, res) => {
   try {
     const searchOptions: SearchOptions = {};
     if (typeof req.query.name === 'string') {
+<<<<<<< HEAD
       searchOptions.name = { $regex: req.query.name.trim(), $options: 'i' };
     }
     
@@ -41,6 +42,15 @@ export const getCanbo: RequestHandler = async (req, res) => {
       const cuoinam = moment(`${namsinh}-12-31`).endOf('year').valueOf()
       
       searchOptions.birthday =  { $gte: daunam, $lte: cuoinam };
+=======
+      searchOptions.name = { $regex: req.query.name, $options: 'i' };
+    }
+    if (typeof req.query.age === 'number') {
+      searchOptions.age = parseInt(req.query.age, 10);
+// thoi diem hien tai - so tuoi => lay nam sinh ra
+// thoi diem dau va cuoi nam sinh ra => diem dau< bd< diem cuoi
+
+>>>>>>> parent of c86c908 (getnew)
     }
     if (typeof req.query.country === 'string') {
       searchOptions.country = { $regex: req.query.country.trim(), $options: 'i' };
@@ -66,6 +76,7 @@ export const getCanbo: RequestHandler = async (req, res) => {
     res.send(errorReturn(getErrorMessage(error)));
   }
 };
+
 
 export const createcanbo: RequestHandler = async (req,res) => {
     try {
