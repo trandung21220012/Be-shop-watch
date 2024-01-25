@@ -27,16 +27,16 @@ export const getMangageProduct: RequestHandler = async (req, res)=>{
         const idTrademark = data.map((i)=>(i.trademarkId))
         const listTrademark = await trademarkModel.find({ '_id': { $in: idTrademark } })
 
-      const dataR =  data.map((i)=>{
+      const dataR =  data.map((i)=>{ // 
         return {
             _id:i._id,
             name:i.name,
             discountedPrice:i.discountedPrice,
             originalPrice:i.originalPrice,
             images:i.images,
-            trademark :  listTrademark.find((value)=>value._id.toString() == i.trademarkId)
+            trademark :  listTrademark.find((value)=>value._id.toString() == i.trademarkId) // là một phương thức gọi trên mảng listTrademark, dùng để tìm phần tử trong listTrademark có _id giống với i.trademarkId.
         }
-   
+        // thêm thông tin về thương hiệu của sản phẩm từ mảng listTrademark, và trả về một mảng mới với các đối tượng sản phẩm có thông tin thương hiệu bổ sung
        })
 
     // const trademark = await trademarkModel.findById(data.trademarkId)
@@ -70,4 +70,36 @@ export const detailProduct : RequestHandler = async (req, res) => {
     } catch (error) {
         res.send(errorReturn(getErrorMessage(error)))
     }
+}
+
+export const getNewProduct : RequestHandler = async (req, res) => {
+    try {
+    const activePage = +req.query.page
+    const limit = +req.query.pageSize
+    const skip = (activePage -1)*limit
+    const record = await productModel.countDocuments()
+    const totalPage = Math.ceil(record/limit)
+    const data = await productModel.find().sort({createdAt: -1}).skip(skip).limit(limit) 
+    const idTrademark = data.map((i)=>(i.trademarkId))
+    const listTrademark = await trademarkModel.find({ '_id': { $in: idTrademark } })
+
+  const dataR =  data.map((i)=>{ // 
+    return {
+        _id:i._id,
+        name:i.name,
+        discountedPrice:i.discountedPrice,
+        originalPrice:i.originalPrice,
+        images:i.images,
+        trademark :  listTrademark.find((value)=>value._id.toString() == i.trademarkId) 
+    }
+   
+   })
+
+// const trademark = await trademarkModel.findById(data.trademarkId)
+    res.send(dataReturn({
+        items:dataR, total:totalPage
+    }))
+} catch (error) {
+    res.send(errorReturn(getErrorMessage(error)))
+}
 }
